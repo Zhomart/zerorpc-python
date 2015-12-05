@@ -192,20 +192,16 @@ class Event(object):
         self._identity = v
 
     def pack(self):
-        ary = [self._header, self._name, self._args]
-        print "--> pack: ", ary, " | ", ujson.dumps(ary)
-        return ujson.dumps(ary)
+        return ujson.dumps([self._header, self._name, self._args])
         # return msgpack.Packer(use_bin_type=True).pack((self._header, self._name, self._args))
 
     @staticmethod
     def unpack(blob):
-        name, args, header = ujson.loads(blob)
+        header, name, args = ujson.loads(blob.tobytes())
 
         # Backward compatibility
         if not isinstance(header, dict):
             header = {}
-
-        print "--> unpack: ", blob, " | ", [name, args, header]
 
         return Event(name, args, None, header)
 
