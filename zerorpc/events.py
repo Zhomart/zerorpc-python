@@ -192,7 +192,9 @@ class Event(object):
         self._identity = v
 
     def pack(self):
-        return ujson.dumps([self._header, self._name, self._args])
+        ary = [self._header, self._name, self._args]
+        print "--> pack: ", ary, " | ", ujson.dumps(ary)
+        return ujson.dumps(ary)
         # return msgpack.Packer(use_bin_type=True).pack((self._header, self._name, self._args))
 
     @staticmethod
@@ -202,6 +204,8 @@ class Event(object):
         # Backward compatibility
         if not isinstance(header, dict):
             header = {}
+
+        print "--> unpack: ", blob, " | ", [name, args, header]
 
         return Event(name, args, None, header)
 
