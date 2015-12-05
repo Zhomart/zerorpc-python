@@ -36,8 +36,8 @@ except ImportError:
 
 requirements = [
     'gevent>=1.0',
-    'msgpack-python>=0.4.0',
-    'pyzmq>=13.1.0'
+    'pyzmq>=13.1.0',
+    'ujson>=1.34'
 ]
 if sys.version_info < (2, 7):
     requirements.append('argparse')

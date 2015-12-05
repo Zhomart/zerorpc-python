@@ -23,7 +23,7 @@
 # SOFTWARE.
 
 
-import msgpack
+import ujson
 import gevent.pool
 import gevent.queue
 import gevent.event
@@ -192,25 +192,35 @@ class Event(object):
         self._identity = v
 
     def pack(self):
-        return msgpack.Packer(use_bin_type=True).pack((self._header, self._name, self._args))
+        return ujson.dumps([self._header, self._name, self._args])
+        # return msgpack.Packer(use_bin_type=True).pack((self._header, self._name, self._args))
 
     @staticmethod
     def unpack(blob):
-        unpacker = msgpack.Unpacker(encoding='utf-8')
-        unpacker.feed(blob)
-        unpacked_msg = unpacker.unpack()
-
-        try:
-            (header, name, args) = unpacked_msg
-        except Exception as e:
-            raise Exception('invalid msg format "{0}": {1}'.format(
-                unpacked_msg, e))
+        name, args, header = ujson.loads(blob)
 
         # Backward compatibility
         if not isinstance(header, dict):
             header = {}
 
         return Event(name, args, None, header)
+
+        # unpacker = msgpack.Unpacker(encoding='utf-8')
+        # unpacker.feed(blob)
+        # unpacked_msg = unpacker.unpack()
+        #
+        # try:
+        #     (header, name, args) = unpacked_msg
+        # except Exception as e:
+        #     raise Exception('invalid msg format "{0}": {1}'.format(
+        #         unpacked_msg, e))
+        #
+        # # Backward compatibility
+        # if not isinstance(header, dict):
+        #     header = {}
+        #
+        # return Event(name, args, None, header)
+
 
     def __str__(self, ignore_args=False):
         if ignore_args:
